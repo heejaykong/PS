@@ -11,13 +11,21 @@ stack=[]
 for i in range(T):
   stack.append(int(input()))
 stack.sort()
+
 # 1번 산술평균
 print(round(sum(stack)/T))
+
 # 2번 중앙값
 print(stack[len(stack)//2])
+
 # 3번 최빈값, 여러 개 있을 때에는 최빈값 중 두 번째로 작은 값을 출력한다.
 from collections import Counter
 c = Counter(stack).most_common()
+# 남의 거 참고한 버전. 이렇게 풀면 코드는 더 짧아지나 시간이 더 짧아지진 않는듯...? 왜지
+# if len(c)>1 and c[0][1] == c[1][1]:
+#   print(c[1][0])
+# else: print(c[0][0])
+# 내가 푼건 아래와 같음
 m=[]
 if len(c)>1:
   for i in c:
@@ -25,5 +33,6 @@ if len(c)>1:
   if len(m)>1: print(m[1])
   else: print(m[0])
 else: print(c[0][0])
+
 # 4번 범위
-print(max(stack)-min(stack))
+print(max(stack)-min(stack)) # 또는 print(stack[-1] - stack[0])
