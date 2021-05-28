@@ -72,3 +72,30 @@ print(ans)
 
 # 다음은 다른 답안들을 보고 개선한 버전이다
 # 굳이 0과 1로 이루어진 중첩 list 두 개를 따로 만들 필요는 없었다
+import sys
+input=sys.stdin.readline
+n,m=map(int, input().split())
+stack=[]
+
+for i in range(n):
+  stack.append(input().rstrip()) # 참고로, 체스판을 꼭 list로 초기화하지 않고 string으로만 append해도 루프에서 잘만 돌더라.
+
+ans = []
+# 루프 안에서 돌면서 바꿔 칠해야 할 블록 갯수를 세고,
+# 그걸 매번 ans 스택에 append해준 다음에 최소값을 찍어내는 식으로 하면 코드가 더 간단해진다
+# 근데 다시 보니 위 코드보다 더 효율적이게 되는 거 같진 않아 보인다...
+for start_n in range(n-7):
+  for start_m in range(m-7):
+    w = 0 # 흰색으로 시작한다 가정할때 바꿔 칠해야 할 블록 갯수
+    b = 0 # 검정색으로 시작한다 가정할때 바꿔 칠해야 할 블록 갯수
+    for i in range(start_n, start_n + 8):
+      for j in range(start_m, start_m + 8):
+        if (i+j) % 2 == 0: # 그냥 index 두개를 더해서 홀수인지 짝수인지 봐도 it works!!!
+          if stack[i][j] != 'W': w += 1
+          if stack[i][j] != 'B': b += 1
+        else:
+          if stack[i][j] != 'B': w += 1
+          if stack[i][j] != 'W': b += 1
+    ans.append(w)
+    ans.append(b)
+print(min(ans))
