@@ -16,4 +16,3 @@ for item in stack:
     cnt += 1
     finish = item[1]
 print(cnt)
-
