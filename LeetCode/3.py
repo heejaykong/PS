@@ -1,4 +1,4 @@
-# 모르겠어서 첨부터 다른 풀이 참고했다.
+# 모르겠어서 첨부터 다른 풀이 참고했다.(https://velog.io/@kgh732/Python-으로-푸는-Leetcode3.-Longest-Substring-Without-Repeating-Characters)
 # Sliding Window 알고리즘이라고 함.
 # 투포인터다.
 class Solution:
