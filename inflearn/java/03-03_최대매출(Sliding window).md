@@ -118,5 +118,5 @@ public class Inflearn03_03{
 O(n)
 ### 배운점
 - 이 접근법을 **Sliding Window**라고 부른다는 것(주어진 배열을, 주어진 범위(k)만큼 토막토막 탐색하는 방법이 마치 고정된 크기의 창문을 옆으로 미는 것과 같아서 Sliding Window라고 불린다고...)
-- Sliding window 문제는 굳이 포인터를 두 개 두지 않아도 풀 수 있다. (sumOfRange값에서 빼고 싶은 앞쪽의 원소는 profits[i - range]로 간단히 찾을 수 있기 때문)
+- Sliding window 문제는 굳이 포인터를 두 개 두지 않아도 풀 수 있다. (`sumOfRange`값에서 빼고 싶은 앞쪽의 원소는 `profits[i - range]`로 간단히 찾을 수 있기 때문)
 - 자바의 `Math.max()` 메소드를 쓰자.
