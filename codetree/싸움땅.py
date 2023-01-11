@@ -1,3 +1,5 @@
+# https://www.codetree.ai/training-field/frequent-problems/battle-ground
+
 # 0:위, 1:오른, 2:아래, 3:왼
 dxs = [-1, 0, 1, 0]
 dys = [0, 1, 0, -1]
