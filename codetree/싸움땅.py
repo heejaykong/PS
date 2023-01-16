@@ -23,16 +23,44 @@ for i, _ in enumerate(range(m)):
     players.append(player)
 
 
-def loser_rotate():
-    pass
+def drop_gun(current_player):
+    no, x, y, dir, skill, gun, point = current_player
+    ground[x][y].append(gun)
+    current_player[5] = 0
+    update(current_player)
 
 
-def drop_gun():
-    pass
+def rotate(current_player):
+    no, x, y, dir, skill, gun, point = current_player
+    current_player[3] += 1
+
+    update(current_player)
 
 
-def switch_gun():
-    pass
+def going_to_collide(loser):
+    no, x, y, dir, skill, gun, point = loser
+    next_x = x + dxs[dir]
+    next_y = y + dys[dir]
+    for i, enemy in enumerate(players):
+        if i == no:
+            continue
+        if next_x == enemy[1] and next_y == enemy[2]:
+            return True
+    return False
+
+
+def loser_move(loser):
+    no, x, y, dir, skill, gun, point = loser
+
+    # 격자 범위를 벗어날 예정이면 rotate
+    while not in_range(x, y, dir):
+        rotate(loser)
+
+    # 가고자 하는 좌표에 누가 있으면 rotate
+    while going_to_collide(loser):
+        rotate(loser)
+
+    move(loser)
 
 
 def update(current_player):
@@ -63,10 +91,12 @@ def fight(current_player, enemy):
     no2, x2, y2, dir2, skill2, gun2, point2 = enemy
     curr_power = skill1 + gun1
     enemy_power = skill2 + gun2
+    diff = curr_power - enemy_power if curr_power > enemy_power else enemy_power - curr_power
     if curr_power == enemy_power:
-        return current_player if skill1 > skill2 else enemy
-
-
+        (winner, loser) = (current_player, enemy) if skill1 > skill2 else (enemy, current_player)
+        return winner, loser, diff
+    (winner, loser) = (current_player, enemy) if curr_power > enemy_power else (enemy, current_player)
+    return winner, loser, diff
 
 
 def get_collide(current_player):
@@ -88,18 +118,18 @@ def move(player):
     update(player)
 
 
-def in_range(x, y, n, dir):
+def in_range(x, y, dir):
     next_x = x + dxs[dir]
     next_y = y + dys[dir]
     return (0 <= next_x < n) and (0 <= next_y < n)
 
 
-def simulate():
+def simulate(round):
     for player in players:
         # player = 0:no, 1:x, 2:y, 3:dir, 4:skill, 5:gun, 6:point
         no, x, y, dir, skill, gun, point = player
         # 격자를 벗어나면 방향을 뒤집어 한칸 이동
-        if not in_range(x, y, n, dir):
+        if not in_range(x, y, dir):
             if dir < 2:
                 player[3] = dir + 2
             else:
@@ -109,8 +139,23 @@ def simulate():
         if not enemy:
             pick_gun(player)
         if enemy:
-            fight(player, enemy)
+            winner, loser, diff = fight(player, enemy)
+            # print(winner, loser, diff)
+            winner[6] += diff
+            update(winner)
+            # 2-2-2
+            drop_gun(loser)
+            loser_move(loser)
+            pick_gun(loser)
+            # 2-2-3
+            pick_gun(winner)
+
+        result = []
+        for player in players:
+            result.append(player[6])
+
+        print(round, result)
 
 
-for _ in range(k):
-    simulate()
+for round in range(k):
+    simulate(round)
