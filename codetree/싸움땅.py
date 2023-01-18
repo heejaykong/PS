@@ -25,40 +25,42 @@ for i, _ in enumerate(range(m)):
 
 def drop_gun(current_player):
     no, x, y, dir, skill, gun, point = current_player
-    ground[x][y].append(gun)
-    current_player[5] = 0
-    update(current_player)
+    if gun > 0:
+        ground[x][y].append(gun)
+        current_player[5] = 0
+        update(current_player)
 
 
+# loser관련 메소드
 def rotate(current_player):
     no, x, y, dir, skill, gun, point = current_player
-    current_player[3] += 1
+
+    if dir == 3:
+        current_player[3] = 0
+    else:
+        current_player[3] = dir + 1
 
     update(current_player)
 
 
-def going_to_collide(loser):
-    no, x, y, dir, skill, gun, point = loser
+# loser관련 메소드
+def going_to_collide(x, y, dir):
     next_x = x + dxs[dir]
     next_y = y + dys[dir]
     for i, enemy in enumerate(players):
-        if i == no:
-            continue
         if next_x == enemy[1] and next_y == enemy[2]:
             return True
     return False
 
 
+# loser관련 메소드
 def loser_move(loser):
     no, x, y, dir, skill, gun, point = loser
 
-    # 격자 범위를 벗어날 예정이면 rotate
-    while not in_range(x, y, dir):
+    # 가고자 하는 좌표에 누가 있으면, 또는 격자 범위를 벗어날 예정이면 rotate
+    while going_to_collide(x, y, dir) or not in_range(x, y, dir):
         rotate(loser)
-
-    # 가고자 하는 좌표에 누가 있으면 rotate
-    while going_to_collide(loser):
-        rotate(loser)
+        no, x, y, dir, skill, gun, point = loser
 
     move(loser)
 
@@ -74,6 +76,8 @@ def update(current_player):
 
 def pick_gun(current_player):
     no, x, y, dir, skill, old_gun, point = current_player
+    if len(ground[x][y]) == 0:
+        return
     highest_gun = max(ground[x][y])
     if not highest_gun:
         return
@@ -83,6 +87,7 @@ def pick_gun(current_player):
     if old_gun > 0:
         ground[x][y].append(old_gun)
     current_player[5] = highest_gun
+    ground[x][y].remove(highest_gun)
     update(current_player)
 
 
@@ -124,7 +129,7 @@ def in_range(x, y, dir):
     return (0 <= next_x < n) and (0 <= next_y < n)
 
 
-def simulate(round):
+def simulate(round_no):
     for player in players:
         # player = 0:no, 1:x, 2:y, 3:dir, 4:skill, 5:gun, 6:point
         no, x, y, dir, skill, gun, point = player
@@ -150,12 +155,12 @@ def simulate(round):
             # 2-2-3
             pick_gun(winner)
 
-        result = []
-        for player in players:
-            result.append(player[6])
 
-        print(round, result)
+for round_no in range(k):
+    simulate(round_no)
 
+result = []
+for player in players:
+    result.append(player[6])
 
-for round in range(k):
-    simulate(round)
+print(" ".join(map(str, result)))
