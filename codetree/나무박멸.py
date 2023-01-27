@@ -32,8 +32,8 @@ def not_in_range(x, y):
 
 
 def step_1_grow():
-    for x in range(n + 1):
-        for y in range(n + 1):
+    for x in range(1, n + 1):
+        for y in range(1, n + 1):
             if forest[x][y] <= 0:  # 빈 칸이거나 벽이면
                 continue
 
@@ -46,19 +46,95 @@ def step_1_grow():
 
 
 def step_2_spread():
-    pass
+    for x in range(1, n + 1):
+        for y in range(1, n + 1):
+            if forest[x][y] <= 0:  # 빈 칸이거나 벽이면
+                continue
+
+            # 주변의 빈 칸 찾기(확산할 곳 찾기)
+            blank_count = 0
+            for dx, dy in zip(dxs, dys):
+                nx, ny = x + dx, y + dy
+                if not_in_range(nx, ny):  # 격자를 벗어나면
+                    continue
+                if forest[nx][ny] == 0:  # 빈 칸이면
+                    blank_count += 1
+
+            # 빈 칸에 할당량만큼 확산시키기
+            portion = forest[x][y] // blank_count
+            for dx, dy in zip(dxs, dys):
+                nx, ny = x + dx, y + dy
+                if not_in_range(nx, ny):  # 격자를 벗어나면
+                    continue
+                if chemical[nx][ny] > 0:  # 제초제 칸이면
+                    continue
+                if forest[nx][ny] == 0:  # 빈 칸이면
+                    forest_spread[nx][ny] += portion
+
+    for x in range(1, n + 1):
+        for y in range(1, n + 1):
+            forest[x][y] += forest_spread[x][y]
+    print(forest)
 
 
 def step_3_check_kill_spot():
-    pass
+    max_kill_count = 0
+    max_x = 1
+    max_y = 1
+    for x in range(1, n + 1):
+        for y in range(1, n + 1):
+            if forest[x][y] <= 0:
+                continue
+
+            # 한 칸의 대각선을 탐색
+            check_kill_count = forest[x][y]
+            for dx, dy in zip(diag_xs, diag_ys):
+                for distance in range(1, k + 1):
+                    nx, ny = x + (dx * distance), y + (dy * distance)
+                    if not_in_range(nx, ny):
+                        break
+
+                    if forest[nx][ny] <= 0:  # 벽이거나 나무가 없으면
+                        break
+                    check_kill_count += forest[nx][ny]
+            # 현재 스팟이 나무를 가장 많이 박멸하는지 max값과 비교
+            if max_kill_count < check_kill_count:
+                max_kill_count = check_kill_count
+                max_x = x
+                max_y = y
+
+    global answer
+    answer += max_kill_count
+
+    return max_x, max_y
 
 
 def reduce_chemical_time():
-    pass
+    for x in range(1, n + 1):
+        for y in range(1, n + 1):
+            chemical[x][y] -= 1
 
 
-def step_3_kill():
-    pass
+def step_3_kill(max_x, max_y):
+    # 제초제 뿌리기~!
+    chemical[max_x][max_y] = c
+    forest[max_x][max_y] = 0
+
+    for dx, dy in zip(diag_xs, diag_ys):
+        for distance in range(1, k + 1):
+            nx, ny = max_x + (dx * distance), max_y + (dy * distance)
+            if not_in_range(nx, ny):
+                break
+            # 벽이거나 아무것도 없으면 뿌리고 거기서 끝내라
+            if forest[nx][ny] <= 0:
+                chemical[nx][ny] = c
+                forest[nx][ny] = 0
+                break
+            chemical[nx][ny] = c
+            forest[nx][ny] = 0
+
+    print(forest)
+    print(chemical)
 
 
 for i in range(m):
@@ -67,11 +143,12 @@ for i in range(m):
     # 2. 나무의 확산
     step_2_spread()
     # 3-1. 가장 많이 박멸되는 칸 찾기
-    step_3_check_kill_spot()
+    max_x, max_y = step_3_check_kill_spot()
+    print(max_x, max_y)
     # 제초제 1년 감소
     reduce_chemical_time()
     # 3-2. 비로소 박멸시키기
-    step_3_kill()
+    step_3_kill(max_x, max_y)
 
 
 
