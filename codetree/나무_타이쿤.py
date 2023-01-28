@@ -51,6 +51,7 @@ def step1_move(d, p):
             if medi[x][y] <= 0:  # 영양제가 없는 빈 칸이면
                 continue
 
+            # 이 부분이 문제인듯
             nx, ny = x + (dxs[d] * p), y + (dys[d] * p)
             if out_of_range(nx, ny):
                 nx, ny = reset_xy(nx, ny)
